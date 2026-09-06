@@ -99,7 +99,7 @@ def _extract_vars(text):
         st = cand.index("{")
         en = cand.rindex("}")
         d = json.loads(cand[st:en+1])
-    except Exception:
+    except (ValueError, json.JSONDecodeError):
         d = None
     if isinstance(d, dict) and isinstance(d.get("variables"), list):
         out = []
@@ -179,7 +179,7 @@ def cmd_compile(a):
         sys.exit(f"✗ 输入不存在: {a.input}")
     try:
         obj = json.load(open(a.input, encoding="utf-8"))
-    except Exception as e:
+    except (OSError, ValueError, json.JSONDecodeError) as e:
         sys.exit(f"✗ 输入不是有效 JSON: {e}")
     seq = a.seq if a.seq is not None else int(time.time()) % 1000
     out = compile_one(obj, a.source_model, seq)
